@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <script type="text/javascript" src="./jquery.js"></script>
+    <script type="text/javascript" src="./jquery-ui.min.js"></script>
+    <script type="text/javascript" src="./jquery.gantt.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $( "#gantt" ).gantt({
+          // days: [ "23.12.2010", "24.12.2010", "27.12.2010", "28.12.2010", "29.12.2010" ]
+          days: [ "23.12.2010", "24.12.2010", "27.12.2010" ],
+          events: [ 
+            { title: "Event 1", start: "23.12.2010/1", duration: 5 },
+            { title: "Event 2", start: "23.12.2010/3", duration: 3 },
+            { title: "Event 3", start: "24.12.2010/5", duration: 6 },
+            { title: "Event 4", start: "24.12.2010/2", duration: 1.5 }
+          ]
+        })
+      });
+    </script>
+  </head>
+  <body>
+    <div id="gantt">Placeholder</div>
+    <div id="message"></div>
+  </body>
+</html>
