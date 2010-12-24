@@ -8,6 +8,17 @@
     return "" + i + "px";
   }
 
+  //
+  function absolutePos( l, t, w, h ) {
+    return {
+      position: "absolute",
+      left: px( l ),
+      top: px( t ),
+      width: px( w ),
+      height: px( h )
+    };
+  }
+
   // Main behaviour placed here
   //
   //
@@ -62,13 +73,10 @@
         var $first = true;
         
         $.each( this.options.days, function( i, elt ) {
-          var $div = $("<div class='day'>").appendTo( $this ).css({
-            position: "absolute",
-            left: px( i * $dayWidth ),
-            top: 0,
-            width: px( $dayWidth ),
-            height: $this.css("height")
-          });
+          var $div = $("<div class='day'>").appendTo( $this ).css(
+            absolutePos( i * $dayWidth, 0, 
+                         $dayWidth, parseInt( $this.css( "height" ) ) )
+          );
 
           if( !$first ) { $div.css({borderLeft: "solid 1px #000"}); }
 
@@ -92,13 +100,11 @@
       renderHours: function( div ) {
         var $first = true;
         for( var $i = 0; $i < this.hoursPerDay; ++$i ) {
-          var $hourDiv = $( "<div class='hour'>" ).appendTo( div ).css({
-            height: px( parseInt( div.css("height") ) - this.dayHeaderHeight ),
-            position: "absolute",
-            left: px( $i * this.hourWidth ),
-            top: px( this.dayHeaderHeight ),
-            width: px( $first ? this.hourWidth : this.hourWidth - 1 )
-          });
+          var $hourDiv = $( "<div class='hour'>" ).appendTo( div ).css(
+            absolutePos( $i * this.hourWidth, this.dayHeaderHeight, 
+                         $first ? this.hourWidth : this.hourWidth - 1,          // width
+                         parseInt( div.css("height") ) - this.dayHeaderHeight ) // height
+          );
           
           if( !$first ) { $hourDiv.css({borderLeft: "dotted 1px #000"}); }
 
@@ -122,26 +128,31 @@
         var $self = this;
 
         $.each( this.options.events, function( i, event ) {
-          var $eventDiv = $( "<div class='event'>" ).appendTo( $this ).css({
-            position: "absolute",
-            top: px( $self.headersHeight() + i * $self.eventHeight + $self.eventHalfMargin ),
-            height: px( $self.eventHeight - 2 * $self.eventHalfMargin ),
-            width: px( $self.hourWidth * event.duration ),
-            left: px( $self.calculateLeft( event.start ) ),
+          var $eventDiv = $( "<div class='event'>" ).appendTo( $this ).css(
+            absolutePos( 
+              $self.calculateLeft( event.start ),                                       // left
+              $self.headersHeight() + i * $self.eventHeight + $self.eventHalfMargin,    // top
+              $self.hourWidth * event.duration - 2,                                     // width
+              $self.eventHeight - 2 * $self.eventHalfMargin )                           // height
+          ).css({
             backgroundColor: "#fea",
             cursor: "pointer",
             border: "solid 1px #ddd",
             opacity: "0.75"
           });
 
-          $eventDiv.hover( 
-            function() { $(this).css({backgroundColor: "#f00"}); }, 
-            function() { $(this).css({backgroundColor: "#fea"}); }
-          ).attr( "title", event.title );
 
           $eventDiv.click(function(){$("#message").text( event.title );});
 
-          $eventDiv.draggable({axis: "x", grid: [ $self.hourWidth / 2, 1 ]});
+          if( event.fixed ) {
+            $eventDiv.css({backgroundColor: "#eda"}).attr( "title", event.title + " fixed" );
+          } else {
+            $eventDiv.draggable({axis: "x", grid: [ $self.hourWidth / 2, 1 ]});
+            $eventDiv.hover( 
+              function() { $(this).css({backgroundColor: "#f00"}); }, 
+              function() { $(this).css({backgroundColor: "#fea"}); }
+            ).attr( "title", event.title );
+          }
         });
       },
 
